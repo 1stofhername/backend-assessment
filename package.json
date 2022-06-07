@@ -7,6 +7,8 @@
   "author": "Alicia <arrowsrp@yahoo.com>",
   "license": "MIT",
   "dependencies": {
-    "express-generator": "^4.16.1"
+    "express-generator": "^4.16.1",
+    "memory-cache": "^0.2.0",
+    "node-fetch": "2.6.6"
   }
 }
