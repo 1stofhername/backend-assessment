@@ -1,0 +1,12 @@
+{
+  "name": "backend-assessment",
+  "version": "1.0.0",
+  "description": "A simple json API.",
+  "main": "app.js",
+  "repository": "git@github.com:1stofhername/backend-assessment.git",
+  "author": "Alicia <arrowsrp@yahoo.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express-generator": "^4.16.1"
+  }
+}
