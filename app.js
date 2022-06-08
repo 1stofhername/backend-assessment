@@ -41,7 +41,7 @@ app.get('/api/posts', (req, res) => {
             })
     };
 
-    // Fetches multiple tag values from API, passes to uniqueResults function
+    // Fetches multiple tag values from API, passes to getUniqueResults function
     
     function fetchMultiPost (tagsArray, sortBy, direction){
         let multResults = {"posts":[]}
@@ -53,11 +53,35 @@ app.get('/api/posts', (req, res) => {
             } else if (tagsArray.indexOf(tag)===tagsArray.length-1) {
                 fetch(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`)
                 .then(res=>res.json())
-                .then(data=>{multResults.posts.push(...data.posts);res.status(200).send(multResults);})
+                .then(data=>{multResults.posts.push(...data.posts);getUniqueResults(multResults);})
             }
         });
     };
 
+    // Validate sortBy value and if valid pass to sortQueryResults function else return error message
+
+    function sortByValidator (results, sortBy, direction){
+        const validSortByValue = ['id','reads','likes','popularity'];
+        
+        validSortByValue.indexOf(sortBy) !== -1 ?
+            sortQueryResults(results, sortBy, direction)
+            :
+            res.status(400).send({
+                "error": "sortBy parameter is invalid",
+                })
+    };
+
+    // Remove duplicate query results and send to client or if sortBy value present pass on to sort validation function
+
+    function getUniqueResults (results, sortBy, direction) {
+        const uniquePosts={"posts":[]}
+        uniquePosts.posts.push(...new Map(results.posts.map((item) => [item["id"], item])).values());
+        if (sortBy) {
+        sortByValidator(sortBy, uniquePosts, direction)
+        } else {
+        res.send(uniquePosts)
+        }
+    };
 
 
 })
