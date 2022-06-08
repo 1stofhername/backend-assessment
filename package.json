@@ -11,4 +11,10 @@
     "memory-cache": "^0.2.0",
     "node-fetch": "2.6.6"
   }
+  {
+    "scripts": {
+      "yarn start": "node app.js",
+      "test":"jest"
+    }
+  }
 }
