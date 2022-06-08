@@ -10,11 +10,10 @@
     "express-generator": "^4.16.1",
     "memory-cache": "^0.2.0",
     "node-fetch": "2.6.6"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "jest"
   }
-  {
-    "scripts": {
-      "yarn start": "node app.js",
-      "test":"jest"
-    }
-  }
+
 }

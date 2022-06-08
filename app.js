@@ -58,6 +58,18 @@ app.get('/api/posts', (req, res) => {
         });
     };
 
+    // Remove duplicate query results and send to client or if sortBy value present pass on to sort validation function
+
+    function getUniqueResults (results, sortBy, direction) {
+        const uniquePosts={"posts":[]}
+        uniquePosts.posts.push(...new Map(results.posts.map((item) => [item["id"], item])).values());
+        if (sortBy) {
+        sortByValidator(sortBy, uniquePosts, direction)
+        } else {
+        res.send(uniquePosts)
+        }
+    };
+
     // Validate sortBy value and if valid pass to sortQueryResults function else return error message
 
     function sortByValidator (results, sortBy, direction){
@@ -71,17 +83,27 @@ app.get('/api/posts', (req, res) => {
                 })
     };
 
-    // Remove duplicate query results and send to client or if sortBy value present pass on to sort validation function
+   // Sort results by sortBy value and according to direction
 
-    function getUniqueResults (results, sortBy, direction) {
-        const uniquePosts={"posts":[]}
-        uniquePosts.posts.push(...new Map(results.posts.map((item) => [item["id"], item])).values());
-        if (sortBy) {
-        sortByValidator(sortBy, uniquePosts, direction)
-        } else {
-        res.send(uniquePosts)
+    function sortQueryResults (results, sortBy, direction) {
+        let sortedPosts;
+
+        if(!direction || direction.toUpperCase() === "asc".toUpperCase()) {
+            sortedPosts = results.posts.sort((a, b) => {
+                return a[sortBy] - b[sortBy];
+            });
+        } else if (direction.toUpperCase() === "desc".toUpperCase()) {
+            sortedPosts = results.posts.sort((a, b) => {
+                return b[sortBy] - a[sortBy];
+            });
+        } else if (direction !== "asc".toUpperCase() || "desc".toUpperCase() || undefined)
+        {
+            res.status(400).send({
+                "error": "direction parameter is invalid",
+            });
         }
-    };
+        res.send(sortedPosts);
+    }   
 
 
 })
