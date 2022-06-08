@@ -9,6 +9,9 @@ app.get('/api/posts', (req, res) => {
 
     fetchPosts(tags, sortBy, direction);
 
+
+    // Fetch posts function calls fetchSinglePost for single tag and fetchMultiPost for multiple tags
+
     function fetchPosts (tags, sortBy, direction){
         const tagsArray = tags.split(',');
     
@@ -23,7 +26,38 @@ app.get('/api/posts', (req, res) => {
         }
     };
     
+    // Fetches single tag value from API, if sortBy value passes to sortByValidator, else returns results
+
+    function fetchSinglePost (tag, sortBy, direction){
+        const results={"posts":[]};
     
+        fetch(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`)
+            .then(res=>res.json())
+            .then((data)=>{
+                results.posts.push(...data.posts);
+                sortBy?
+                sortByValidator(results, sortBy, direction):
+                res.status(200).send(results);
+            })
+    };
+
+    // Fetches multiple tag values from API, passes to uniqueResults function
+    
+    function fetchMultiPost (tagsArray, sortBy, direction){
+        let multResults = {"posts":[]}
+        tagsArray.map((tag)=>{
+            if (tagsArray.indexOf(tag)!==tagsArray.length-1) {
+                fetch(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`)
+                .then(res=>res.json())
+                .then(data=>{multResults.posts.push(...data.posts)})
+            } else if (tagsArray.indexOf(tag)===tagsArray.length-1) {
+                fetch(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`)
+                .then(res=>res.json())
+                .then(data=>{multResults.posts.push(...data.posts);res.status(200).send(multResults);})
+            }
+        });
+    };
+
 
 
 })
