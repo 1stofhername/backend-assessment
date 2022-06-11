@@ -30,14 +30,36 @@ app.get('/api/posts', (req, res) => {
 
     function fetchSinglePost (tag, sortBy, direction){
         const results={"posts":[]};
-    
-        fetch(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`)
-            .then(res=>res.json())
-            .then((data)=>{
-                results.posts.push(...data.posts);
-                sortBy?
-                sortByValidator(results, sortBy, direction):
-                res.status(200).send(results);
+
+        // if cache for tag exists then return
+
+        if (cache.get(`${tag}`)) {
+
+            res.status(200).send({
+                "posts": cache.get(`${tag}`)
+            })
+
+            // else fetch and cache data for tag
+
+        } else {
+            fetch(`https://api.hatchways.io/assessment/blog/posts?tag=${tag}`)
+                .then(res=>res.json())
+                .then((data)=>{
+                    cache.put(`${tag}`, data.posts, 500);
+                    if (sortBy) {
+                        sortByValidator(cache.get(`${tag}`))
+                    } else {
+                        res.status(200).send({
+                            "posts": cache.get(`${tag}`)
+                        });}
+                }
+            
+                // results.posts.push(...data.posts);
+            //     if(sortBy) {
+            //     sortByValidator(results, sortBy, direction)
+            //     } else {
+            //     res.status(200).send(results)
+            // }  
             })
     };
 
